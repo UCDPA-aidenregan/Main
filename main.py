@@ -1,11 +1,15 @@
 # 1. Finance Project looking at Car Sales in Ireland
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime as dt
+import dataframe as df
+from pandas_datareader import data
+import pandas as pd
+
 # Notes for next steps
 print("Begin of project, 18 April 2022")
 print("GitHub is set up as UCDPA Aiden Regan")
 # Project now set as Main.py on UCDPA Aiden Regan
-import pandas as pd
 # 2. Import of data via csv file from source on Kaggle
 Sales2018 = pd.read_csv(r"C:\Users\Sarah\Downloads\passengercars2018.csv")
 Sales2019 = pd.read_csv(r"C:\Users\Sarah\Downloads\passengercars 2019.csv")
@@ -83,6 +87,35 @@ print(Visial1)
 # Visualisation of the data
 print("Pivot table for a deeper analysis of each County's habits 2018:")
 print(Sales2018.pivot_table(values="Car registration count", index = "County", columns = "Engine type", aggfunc=[np.sum, np.median], fill_value=0, margins=True))
+
+# Import Car Share Prices using API
+CarStock = ['TSLA','F','VWAGY', 'GM']
+begin=dt.date(2018,1,2)
+end=dt.date(2019,12,31)
+SharePrice = data.DataReader(CarStock,'yahoo',begin,end).rolling(10).mean()
+print(SharePrice.head())
+#Remove Null values
+SP= pd.concat([SharePrice['Close']], axis=1).dropna()
+SP1 = SP.iloc[0]
+CleanSP = SP.div(SP1).mul(100)
+print(CleanSP.head())
+print(CleanSP.describe)
+fig, ax = plt.subplots(2,1,sharey=True)
+ax[0].plot(CleanSP.index,CleanSP["TSLA"], label='Tesla', color='green')
+ax[0].plot(CleanSP.index,CleanSP["F"],label='Ford', color='blue')
+ax[1].plot(CleanSP.index,CleanSP["VWAGY"],label='VW', color='orange')
+ax[1].plot(CleanSP.index,CleanSP["GM"],label='GM', color='red')
+ax[0].set_xlabel('Time')
+ax[0].set_ylabel('Share Prices')
+ax[0].legend()
+ax[0].set_title("Comparing Electric - Tesla to Petrol - Ford")
+ax[1].set_xlabel('Time')
+ax[1].set_ylabel('Share Prices')
+ax[1].legend()
+ax[1].set_title("Comparing Hybrid VW to Petrol - General Motors")
+plt.show()
+
+
 
 
 
