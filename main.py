@@ -87,19 +87,28 @@ print(Visial1)
 # Visualisation of the data
 print("Pivot table for a deeper analysis of each County's habits 2018:")
 print(Sales2018.pivot_table(values="Car registration count", index = "County", columns = "Engine type", aggfunc=[np.sum, np.median], fill_value=0, margins=True))
-
 # Import Car Share Prices using API
 CarStock = ['TSLA','F','VWAGY', 'GM']
+Index = [ "QCLN", "BP"]
 begin=dt.date(2018,1,2)
 end=dt.date(2019,12,31)
 SharePrice = data.DataReader(CarStock,'yahoo',begin,end).rolling(10).mean()
+IndexRead = data.DataReader(Index,'yahoo',begin,end).rolling(10).mean()
 print(SharePrice.head())
+print(IndexRead.head())
 #Remove Null values
 SP= pd.concat([SharePrice['Close']], axis=1).dropna()
 SP1 = SP.iloc[0]
 CleanSP = SP.div(SP1).mul(100)
+IP= pd.concat([IndexRead['Close']], axis=1).dropna()
+IP1 = IP.iloc[0]
+CleanSP = SP.div(SP1).mul(100)
+CleanIP = IP.div(IP1).mul(100)
 print(CleanSP.head())
 print(CleanSP.describe)
+print(CleanIP.head())
+print(CleanIP.describe)
+# charts
 fig, ax = plt.subplots(2,1,sharey=True)
 ax[0].plot(CleanSP.index,CleanSP["TSLA"], label='Tesla', color='green')
 ax[0].plot(CleanSP.index,CleanSP["F"],label='Ford', color='blue')
@@ -114,9 +123,6 @@ ax[1].set_ylabel('Share Prices')
 ax[1].legend()
 ax[1].set_title("Comparing Hybrid VW to Petrol - General Motors")
 plt.show()
-
-
-
 
 
 
