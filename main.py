@@ -5,7 +5,6 @@ import datetime as dt
 import dataframe as df
 from pandas_datareader import data
 import pandas as pd
-
 # Notes for next steps
 print("Begin of project, 18 April 2022")
 print("GitHub is set up as UCDPA Aiden Regan")
@@ -87,7 +86,7 @@ print(Visial1)
 # Visualisation of the data
 print("Pivot table for a deeper analysis of each County's habits 2018:")
 print(Sales2018.pivot_table(values="Car registration count", index = "County", columns = "Engine type", aggfunc=[np.sum, np.median], fill_value=0, margins=True))
-# Import Car Share Prices using API
+# 1. b Import Car Share Prices using API
 CarStock = ['TSLA','F','VWAGY', 'GM']
 Index = [ "QCLN", "BP"]
 begin=dt.date(2018,1,2)
@@ -96,7 +95,7 @@ SharePrice = data.DataReader(CarStock,'yahoo',begin,end).rolling(10).mean()
 IndexRead = data.DataReader(Index,'yahoo',begin,end).rolling(10).mean()
 print(SharePrice.head())
 print(IndexRead.head())
-#Remove Null values
+# 3. b Remove Null values
 SP= pd.concat([SharePrice['Close']], axis=1).dropna()
 SP1 = SP.iloc[0]
 CleanSP = SP.div(SP1).mul(100)
@@ -108,7 +107,7 @@ print(CleanSP.head())
 print(CleanSP.describe)
 print(CleanIP.head())
 print(CleanIP.describe)
-# charts
+# 5. Visualisation of Share Prices - 1
 fig, ax = plt.subplots(2,1,sharey=True)
 ax[0].plot(CleanSP.index,CleanSP["TSLA"], label='Tesla', color='green')
 ax[0].plot(CleanSP.index,CleanSP["F"],label='Ford', color='blue')
@@ -123,9 +122,26 @@ ax[1].set_ylabel('Share Prices')
 ax[1].legend()
 ax[1].set_title("Comparing Hybrid VW to Petrol - General Motors")
 plt.show()
-
-
-
+# 3. d Merge both Index and Share Prices
+Combine= [ CleanSP, CleanIP]
+Twin= pd.concat(Combine, axis=1)
+print(Twin.head())
+# Visual of Index vrs Share Prices - 2
+fig, ax = plt.subplots(2,1,sharey=True)
+ax[0].plot(CleanSP.index,CleanIP["BP"], label='Oil', color='red')
+ax[0].plot(CleanSP.index,CleanSP["F"],label='Ford', color='blue')
+ax[1].plot(CleanSP.index,CleanIP["QCLN"],label='Green Index', color='green')
+ax[1].plot(CleanSP.index,CleanSP["TSLA"],label='Tesla', color='red')
+ax[0].set_xlabel('Time')
+ax[0].set_ylabel('Share Prices')
+ax[0].legend()
+ax[0].set_title("Comparing Oil and Green Index to Car Brands")
+ax[1].set_xlabel('Time')
+ax[1].set_ylabel('Share Prices')
+ax[1].legend()
+ax[1].set_title("Comparing Oil and Green Index to Car Brands")
+plt.show()
+print("End of Project")
 
 
 
